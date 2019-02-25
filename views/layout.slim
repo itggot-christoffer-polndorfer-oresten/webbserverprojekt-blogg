@@ -4,25 +4,23 @@ html lang="en"
         meta charset="UTF-8"/
         meta name="viewport" content="width=device-width, initial-scale=1.0"/
         meta http-equiv="X-UA-Compatible" content="ie=edge"/
+        link rel="stylesheet" href="../public/css/blogg.css"
         title Christoffers Amazing blogg
     body
-
-    
-
-    header
-            h1>Wälkommen
-    - if session[:loggedin?] != true
-        form action="/login" method="POST"
-            input type="text" name="name" placeholder="Username"
-            input type="password" name="password" placeholder="Password"
-            input value="Login" type="submit"
-        p
-        a.create_account href="/create" Registrera
-    - else 
-        form action="/logout" method="POST"
-            input value="Logout" type="submit" name="logout"
-    - if session[:loggedin?] == true
-        a href="/your_profile" Din profil
+        header
+            h1 Wälkommen
+            - if session[:loggedin?] != true && session[:remove_login] != true
+                form action="/login" method="POST"
+                    input type="text" name="name" placeholder="Username"
+                    input type="password" name="password" placeholder="Password"
+                    input value="Login" type="submit"
+                p
+                a.create_account href="/create" Registrera
+            - elsif session[:remove_login] != true
+                form action="/logout" method="POST"
+                    input value="Logout" type="submit" name="logout"
+            - if session[:loggedin?] == true
+                a href="/your_profile" Din profil
 
     div class="wrapper"
         == yield

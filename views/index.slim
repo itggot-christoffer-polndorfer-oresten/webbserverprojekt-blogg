@@ -1,2 +1,8 @@
 h1 dis is the index page yis
+a href="/post" Skriv ett inlägg
 
+wrapper
+    -post_text.each do |element|
+        div.blogg_post
+            h1 = element["PostText"]
+        
