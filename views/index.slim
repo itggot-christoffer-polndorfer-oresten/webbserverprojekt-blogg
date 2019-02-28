@@ -3,6 +3,13 @@ a href="/post" Skriv ett inlägg
 
 wrapper
     -post_text.each do |element|
-        div.blogg_post
-            h1 = element["PostText"]
-        
+        article.blogg_post
+            .controls
+                a href="/edit_post/#{element["PostId"]}"
+                    i.material-icons edit
+
+            div.post
+                p = element["PostText"]
+
+                            
+            

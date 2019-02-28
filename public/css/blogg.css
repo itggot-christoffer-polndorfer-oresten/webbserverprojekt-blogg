@@ -1,6 +1,17 @@
-.blogg_post{
-    background-color: black;
-    width: 100px;
-    height: 100px;
+body{
+    width: 50%;
+    height: auto;
+    margin: auto;
+}
 
+header{
+    position: relative;
+    width: 100%
+}
+
+header > h1{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10%;
+    text-align: center;
 }
