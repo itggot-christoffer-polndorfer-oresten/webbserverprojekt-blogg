@@ -50,7 +50,10 @@ end
 
 get('/your_profile') do 
     if session[:loggedin?] == true 
-        slim(:your_profile)
+        db = SQLite3::Database.new("db/blogg_db.db")
+        db.results_as_hash = true
+        profile_info = db.execute("SELECT * FROM users WHERE UserId = ?", session[:id])
+        slim(:your_profile, locals:{profile_info: profile_info})
     else
         redirect('/')
     end 
@@ -67,7 +70,16 @@ end
 post('/submit_post') do 
     db = SQLite3::Database.new("db/blogg_db.db")
     db.results_as_hash = true
-    db.execute("INSERT INTO posts (PostText) VALUES (?)", params["post"])
+    #VARNIG DIREKT PLAGIAT FRÅN EMIL LINDBLAD 
+        imgname = params[:img][:filename]
+        img = params[:img][:tempfile]
+        if imgname.include?(".png") or imgname.include?(".jpg")
+            newname = SecureRandom.hex(10) + "." + /(.*)\.(jpg|bmp|png|jpeg)$/.match(imgname)[2]
+            File.open("public/img/#{newname}", 'wb') do |f|
+                f.write(img.read)
+            end
+        end 
+    db.execute("INSERT INTO posts (PostText, img_path) VALUES (?,?)", params["post"], newname)
     redirect('/')
 end 
 
@@ -80,25 +92,33 @@ get('/edit_post/:postid') do
     if session[:loggedin?] == true 
         db = SQLite3::Database.new("db/blogg_db.db")
         db.results_as_hash = true
-        post_info = db.execute("SELECT PostText FROM posts WHERE PostId = ?", params["PostId"])
+        post_info = db.execute("SELECT * FROM posts WHERE PostId = ?", params["postid"])
+        
         slim(:edit_post, locals:{post_info: post_info})
     else
         redirect('/')
     end 
 end 
 
-post('/updating') do 
+post('/updating_profile') do 
     db = SQLite3::Database.new("db/blogg_db.db")
     db.results_as_hash = true
-    db.execute("UPDATE users SET Username = ?, Password = ?, Email = ?, Phone = ? WHERE UserId = ?", params["name"], params["password"], params["email"], params["phone"], session[:id])
+    db.execute("UPDATE users SET Username = ?, Email = ?, Phone = ? WHERE UserId = ?", params["name"], params["email"], params["tel"], session[:id])
+    session[:name] = params["name"]
+    redirect("/")
+end 
 
+post('/updating/:postid') do 
+    db = SQLite3::Database.new("db/blogg_db.db")
+    db.results_as_hash = true
+    db.execute("UPDATE posts SET PostText = ? WHERE PostId = ?", params["edit_post"], params["postid"])
     redirect('/')
 end 
  
 
-# post('/deleting_post') do 
-#     db = SQLite3::Database.new("db/blogg_db.db")
-#     db.results_as_hash = true
-#     db.execute("DELETE FROM posts WHERE PostId = ?", params[""])
-
-# end 
+post('/deleting_post/:postid') do 
+    db = SQLite3::Database.new("db/blogg_db.db")
+    db.results_as_hash = true
+    db.execute("DELETE FROM posts WHERE PostId = ?", params["postid"])
+    redirect('/')
+end

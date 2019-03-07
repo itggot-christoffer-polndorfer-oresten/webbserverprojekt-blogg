@@ -1,5 +1,12 @@
-form action="/deleting_post" method="POST" 
+- post_info = post_info.first
+form action="/deleting_post/#{post_info["PostId"]}" method="POST" 
     button type="submit" 
         i.material-icons delete
 
-p Paragraf: #{post_info["Post_Text"]}
+form action="/updating/#{post_info["PostId"]}" method="POST"
+    textarea name="edit_post" cols="50" rows="10" placeholder="Skriv Ditt Inlägg" = "#{post_info["PostText"]}"
+    input type="Submit" value="Update"
+
+p #{post_info["PostText"]}
+p #{post_info}
+

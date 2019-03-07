@@ -13,9 +13,9 @@ html lang="en"
             h1 Wälkommen
             - if session[:loggedin?] != true && session[:remove_login] != true
                 form action="/login" method="POST"
-                    input type="text" name="name" placeholder="Username"
-                    input type="password" name="password" placeholder="Password"
-                    input value="Login" type="submit"
+                    input type="text" name="name" placeholder="Username" required="required"
+                    input type="password" name="password" placeholder="Password" required="required"
+                    input value="Login" type="submit" required="required"
                 p
                 a.create_account href="/create" Registrera
             - elsif session[:remove_login] != true

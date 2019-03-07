@@ -1,8 +1,10 @@
-h1 Det här är din profil #{ session[:name]}!
+h1 Det här är din profil #{session[:name]}!
 a href="/" Tillbaka
+h2 Redigera din profil #{session[:name]}!
 
-form action="/updating" method="POST"
-        input name="name" placeholder="Name" type="text" required="required"
-        input name="email" placeholder="Email" type="email" required="required"
-        input name="tel" placeholder="Telephone" type="test" required="required"
-        input type="submit" value="update" 
+- profile_info = profile_info.first
+form action="/updating_profile" method="POST"
+        input name="name" placeholder="Name" type="text" required="required" value="#{profile_info["Username"]}"
+        input name="email" placeholder="Email" type="email" required="required" value="#{profile_info["Email"]}"
+        input name="tel" placeholder="Telephone" type="test" required="required" value="#{profile_info["Phone"]}"
+        input type="submit" value="Update" 
