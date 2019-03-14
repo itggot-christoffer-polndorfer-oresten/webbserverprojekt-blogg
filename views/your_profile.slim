@@ -8,3 +8,14 @@ form action="/updating_profile" method="POST"
         input name="email" placeholder="Email" type="email" required="required" value="#{profile_info["Email"]}"
         input name="tel" placeholder="Telephone" type="test" required="required" value="#{profile_info["Phone"]}"
         input type="submit" value="Update" 
+
+wrapper
+    -post_text.each do |element|
+        article.blogg_post
+            .controls
+                a href="/edit_post/#{element["PostId"]}"
+                    i.material-icons edit
+
+            div.post
+                p = element["PostText"]
+                img src="/img/#{element["PostImg"]}"

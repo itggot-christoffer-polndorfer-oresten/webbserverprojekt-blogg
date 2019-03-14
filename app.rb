@@ -3,13 +3,14 @@ require'sqlite3'
 require'sinatra'
 require'byebug'
 require'BCrypt'
+require'securerandom'
 
 enable :sessions
 
 get('/') do #main sidan
     db = SQLite3::Database.new("db/blogg_db.db")
     db.results_as_hash = true
-    post_text = db.execute("SELECT * FROM posts")
+    post_text = db.execute("SELECT * FROM posts ORDER BY PostId DESC")
     slim(:index, locals:{post_text: post_text})
 end
 
@@ -53,7 +54,8 @@ get('/your_profile') do
         db = SQLite3::Database.new("db/blogg_db.db")
         db.results_as_hash = true
         profile_info = db.execute("SELECT * FROM users WHERE UserId = ?", session[:id])
-        slim(:your_profile, locals:{profile_info: profile_info})
+        post_text = db.execute("SELECT * FROM posts WHERE AuthorId = ? ORDER BY PostId DESC", session[:id])
+        slim(:your_profile, locals:{profile_info: profile_info, post_text: post_text})
     else
         redirect('/')
     end 
@@ -71,15 +73,16 @@ post('/submit_post') do
     db = SQLite3::Database.new("db/blogg_db.db")
     db.results_as_hash = true
     #VARNIG DIREKT PLAGIAT FRÅN EMIL LINDBLAD 
-        imgname = params[:img][:filename]
-        img = params[:img][:tempfile]
-        if imgname.include?(".png") or imgname.include?(".jpg")
-            newname = SecureRandom.hex(10) + "." + /(.*)\.(jpg|bmp|png|jpeg)$/.match(imgname)[2]
-            File.open("public/img/#{newname}", 'wb') do |f|
-                f.write(img.read)
-            end
-        end 
-    db.execute("INSERT INTO posts (PostText, img_path) VALUES (?,?)", params["post"], newname)
+    imgname = params[:img][:filename]
+    img = params[:img][:tempfile]
+    
+    if imgname.include?(".png") or imgname.include?(".jpg")
+        newname = SecureRandom.hex(10) + "." + /(.*)\.(jpg|bmp|png|jpeg)$/.match(imgname)[2]
+        File.open("public/img/#{newname}", 'wb') do |f|
+            f.write(img.read)
+        end
+    end 
+    db.execute("INSERT INTO posts (PostText, PostImg, AuthorId) VALUES (?,?,?)", params["post"], newname, session[:id])
     redirect('/')
 end 
 
